@@ -10,9 +10,9 @@ class OSMLoader:
 
     def __init__(self, config: Config) -> None:
         self.config: Config = config
-        self.graph: MultiDiGraph | None = None              # streets as graph from osmnx
-        self.edges: gpd.GeoDataFrame | None = None          # streets from osmnx
-        self.nodes: gpd.GeoDataFrame | None = None          # intersections from osmnx
+        self.graph: MultiDiGraph | None = None                      # streets as graph from osmnx
+        self.streets: gpd.GeoDataFrame | None = None                # streets from osmnx
+        self.intersections: gpd.GeoDataFrame | None = None          # intersections from osmnx
         self._load()
 
     def _load(self) -> None:
@@ -24,11 +24,17 @@ class OSMLoader:
         
     def _cache_exists(self) -> bool:
         """Checks if the cache file exists"""
-        return
+
+        if self._cache_path().exists():
+            return True
+        else:
+            return False
     
     def _load_from_cache(self) -> None:
         """Loads the data from the cache file"""
-        return
+
+        self.graph = ox.load_graphml(self._cache_path())
+        self.intersections, self.streets = ox.graph_to_gdfs(self.graph)
 
     def _load_from_osm(self) -> None:
         """Loads the data from OSM and saves it to the cache file"""
@@ -39,6 +45,21 @@ class OSMLoader:
                 network_type="drive"
             )
             
-            self.nodes, self.edges = ox.graph_to_gdfs(self.graph)
+            self.intersections, self.streets = ox.graph_to_gdfs(self.graph)
+            self._save_cache()
         except Exception as e:
             raise LoaderError(f"Failed to load from OSM: {e}")
+        
+    def _save_cache(self) -> None:
+        """Saves the graph to the cache file"""
+
+        cache_dir = Path(self.config.raw_config["cache"]["cache_directory"])
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        ox.save_graphml(self.graph, filepath=self._cache_path())
+
+    def _cache_path(self) -> Path:
+        """Builds the cache file path from the city name"""
+        city = self.config.raw_config["location"]["name"]
+        filename = city.replace(" ", "_").replace(",", "") + ".graphml"
+        cache_dir = Path(self.config.raw_config["cache"]["cache_directory"])
+        return cache_dir / filename

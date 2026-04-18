@@ -10,8 +10,8 @@ def main():
     print("Loading street data from OSM...")
     loader = OSMLoader(cfg)
     
-    print(f"intersections: {len(loader.nodes)}")
-    print(f"streets: {len(loader.edges)}")
+    print(f"intersections: {len(loader.intersections)}")
+    print(f"streets: {len(loader.streets)}")
 
 if __name__ == "__main__":
     main()

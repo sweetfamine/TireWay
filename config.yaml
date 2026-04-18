@@ -6,6 +6,7 @@ location:
 # Cache Configuration
 cache:
   enabled: true 
+  cache_directory: "./cache"
 
 # Output Configuration
 output:
