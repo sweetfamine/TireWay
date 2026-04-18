@@ -1,0 +1,18 @@
+# Location Configuration
+location:
+  name: "Berlin"
+  timezone: "Europe/Berlin"
+
+# Cache Configuration
+cache:
+  enabled: true 
+
+# Output Configuration
+output:
+  output_directory: "cache/"
+  output_format: 
+    - "json"
+    - "csv"
+    - "xml"
+    - "yaml"
+    - "html"
