@@ -21,10 +21,8 @@ class Config:
         with open(self.config_path, 'r') as configFile:
             self.raw_config = yaml.safe_load(configFile)
         
-        if not isinstance(data, dict):
+        if not isinstance(self.raw_config, dict):
             raise ConfigError("config cant be loaded, because it is not a dict")
         
-        if "location" not in data:
+        if "location" not in self.raw_config:
             raise ConfigError("config cant be loaded, because location is missing")
-        
-        self.raw_config = data
